@@ -1,9 +1,7 @@
 import boto3
 from ejemplo.ec2Credentials import openSession
 
-#boto = boto3.Session(profile_name='dev') En caso de que tengamos varias keys
-#ec2 = boto.client('ec2')
-
+#Return list with names of instances 
 def get_instances():
     instances=list()
     client = openSession().client('ec2')
@@ -16,9 +14,10 @@ def get_instances():
                     instances.append(s['Value'])
     return instances
 
+#Return list with volumeId's of instances
 def get_volumes():
     volumes=list()
-    client = boto3.client('ec2')
+    client = openSession().client('ec2')
     ec2=client.describe_volumes()
 
     for i in ec2['Volumes']:
@@ -27,9 +26,10 @@ def get_volumes():
 
     return volumes
 
+#Return list with VpcId's of instances
 def get_vpcs():
     vpcs = list()
-    client = boto3.client('ec2')
+    client = openSession().client('ec2')
     ec2 = client.describe_vpcs()
 
     for i in ec2['Vpcs']:
@@ -37,9 +37,10 @@ def get_vpcs():
 
     return vpcs
 
+#Return instance ID of a instance whose name is 'AlphaGroup'
 def get_instanceIdfromName():
 
-    client = boto3.client('ec2')
+    client = openSession().client('ec2')
     ec2 = client.describe_instances(
         Filters=[
             {
@@ -54,21 +55,20 @@ def get_instanceIdfromName():
 
     return instanceId
 
+#Put a 'Name' tag in a instance with value 'value'
 def put_tagInInstance(value):
 
-    client = boto3.resource('ec2')
+    client = openSession().resource('ec2')
     client.create_tags(Resources=[get_instanceIdfromName()],Tags=[
         {
-            'Key':'Devops-jose',
+            'Key':'Name',
             'Value':value
         }])
 
+#Launch a instance with features indicated
 def launch_instance():
     client = openSession().client('ec2')
     instances = client.run_instances(ImageId='ami-9398d3e0',MinCount=1,MaxCount=1,KeyName='alpha',
                                      InstanceType='t2.micro',Monitoring={'Enabled':False},
                                      NetworkInterfaces=[{'DeviceIndex':0,'AssociatePublicIpAddress':True,
                                                          'SubnetId':'subnet-f1e770a9'}])
-
-
-launch_instance()
