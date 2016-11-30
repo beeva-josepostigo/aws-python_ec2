@@ -1,6 +1,7 @@
 import boto3
 import yaml
 
+#Function to open boto3 session (connection with AWS) using credentials saved in a file indicated as parameter 
 def openSession():
     with open("/home/josepostigo/amazon/ejemplo/config/credential.yaml","r") as credential_file:
 
